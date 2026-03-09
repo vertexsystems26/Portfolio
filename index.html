@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vertex Systems | Intelligence & Imagination</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Refined Premium Palette */
+            --bg-deep: #030a0d;
+            --bg-surface: #07151a;
+            --primary-dark: #00424d;
+            --accent-teal: #00e5a3; /* Brighter, more electric teal */
+            --light-teal: #3BC1A8;
+            --text-white: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-bg: rgba(255, 255, 255, 0.02);
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --transition-smooth: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg-deep);
+            color: var(--text-white);
+            line-height: 1.7;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- Smooth Background Animation --- */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at top right, rgba(12, 119, 121, 0.15), var(--bg-deep) 60%);
+        }
+
+        /* --- Navigation --- */
+        .navbar {
+            position: fixed;
+            top: -100px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 8%;
+            background: rgba(3, 10, 13, 0.6);
+            backdrop-filter: blur(16px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--glass-border);
+            transition: top 0.8s cubic-bezier(0.165, 0.84, 0.44, 1), padding 0.4s;
+        }
+        .navbar.visible { top: 0; }
+        .navbar.scrolled { padding: 1rem 8%; background: rgba(3, 10, 13, 0.9); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+
+        .logo-container { display: flex; align-items: center; gap: 15px; text-decoration: none; color: white; }
+        .nav-logo-img { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--accent-teal); object-fit: cover; transition: var(--transition-smooth); }
+        .logo-container:hover .nav-logo-img { transform: scale(1.05); box-shadow: 0 0 15px rgba(0, 229, 163, 0.4); }
+        .logo-text { font-size: 1.2rem; letter-spacing: 2px; font-weight: 300; }
+        .logo-text b { color: var(--text-white); font-weight: 800; }
+
+        .nav-links { display: flex; list-style: none; gap: 2.5rem; }
+        .nav-links a { text-decoration: none; color: var(--text-muted); font-size: 0.85rem; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; transition: var(--transition-smooth); }
+        .nav-links a:hover { color: var(--accent-teal); }
+
+        /* --- Sections --- */
+        section { 
+            min-height: 100vh; 
+            padding: 140px 10%; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center;
+            position: relative;
+        }
+
+        /* Subtle Section Gradients instead of harsh borders */
+        section:nth-child(even) {
+            background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0, 66, 77, 0.05) 50%, rgba(0,0,0,0) 100%);
+        }
+
+        .section-title-container { text-align: center; margin-bottom: 5rem; width: 100%; }
+        .section-title-container h2 { font-size: 3.5rem; margin-bottom: 20px; font-weight: 800; letter-spacing: -1px; }
+        .underline { height: 3px; width: 50px; background: var(--accent-teal); margin: 0 auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 229, 163, 0.5); }
+
+        /* --- Hero --- */
+        #home { flex-direction: row; }
+        .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; width: 100%; align-items: center; }
+        .hero-text h1 { font-size: clamp(3rem, 6vw, 5rem); line-height: 1.05; margin: 1.5rem 0; font-weight: 800; letter-spacing: -2px; }
+        .hero-text p { color: var(--text-muted); font-size: 1.2rem; max-width: 90%; font-weight: 400; }
+        
+        .hero-logo-img { 
+            width: 100%; 
+            max-width: 450px; 
+            aspect-ratio: 1/1; 
+            border-radius: 50%; 
+            object-fit: cover;
+            border: 1px solid rgba(255,255,255,0.1); 
+            box-shadow: 0 0 60px rgba(0, 229, 163, 0.15), inset 0 0 40px rgba(0, 229, 163, 0.1); 
+            animation: float 8s ease-in-out infinite; 
+        }
+        @keyframes float { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-20px) scale(1.02); } }
+
+        /* --- About --- */
+        .about-grid { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 80px; align-items: center; width: 100%; }
+        .about-logo { width: 100%; max-width: 380px; aspect-ratio: 1/1; border-radius: 20px; object-fit: cover; border: 1px solid var(--glass-border); opacity: 0.9; }
+        .about-text p { font-size: 1.15rem; color: var(--text-muted); font-weight: 300; }
+        .about-text strong { color: var(--text-white); font-weight: 500; }
+
+        /* --- Services (Bento Grid) --- */
+        .services-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); /* Forces exactly 4 columns */
+            gap: 25px; 
+            width: 100%; 
+        }
+        .service-card { 
+            background: var(--glass-bg); 
+            border: 1px solid var(--glass-border); 
+            padding: 40px 30px; 
+            border-radius: 16px; 
+            text-align: left; 
+            transition: var(--transition-smooth); 
+            backdrop-filter: blur(12px); 
+            position: relative;
+            overflow: hidden;
+        }
+        .service-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at top right, rgba(0, 229, 163, 0.1), transparent 70%);
+            opacity: 0; transition: var(--transition-smooth);
+        }
+        .service-card:hover { transform: translateY(-5px); border-color: rgba(0, 229, 163, 0.3); box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
+        .service-card:hover::before { opacity: 1; }
+        .service-card i { font-size: 2.5rem; color: var(--accent-teal); margin-bottom: 1.5rem; display: block; }
+        .service-card h3 { font-size: 1.3rem; margin-bottom: 10px; font-weight: 700; color: var(--text-white); }
+        .service-card p { color: var(--text-muted); font-size: 0.95rem; font-weight: 300; }
+
+        /* --- Contact --- */
+        .contact-methods { display: flex; flex-direction: column; align-items: center; gap: 30px; margin-top: 2rem; }
+        .phone-link { color: var(--text-white); font-size: 1.5rem; text-decoration: none; font-weight: 500; transition: var(--transition-smooth); display: flex; align-items: center; gap: 15px; }
+        .phone-link i { color: var(--accent-teal); }
+        .phone-link:hover { color: var(--accent-teal); }
+
+        .social-links { display: flex; justify-content: center; gap: 1.5rem; margin-top: 2rem; }
+        .social-btn {
+            width: 55px; height: 55px; display: flex; align-items: center; justify-content: center;
+            text-decoration: none; color: var(--text-white); font-size: 1.2rem;
+            border: 1px solid var(--glass-border); border-radius: 50%;
+            background: var(--glass-bg);
+            transition: var(--transition-smooth); backdrop-filter: blur(5px);
+        }
+        .social-btn:hover { background: var(--text-white); color: var(--bg-deep); border-color: var(--text-white); transform: translateY(-5px); }
+
+        /* --- Utils --- */
+        .cta-btn { 
+            display: inline-block; padding: 16px 40px; 
+            background: var(--text-white); color: var(--bg-deep); 
+            text-decoration: none; font-weight: 700; font-size: 0.9rem;
+            border-radius: 4px; /* Harder corners for a modern tech feel */
+            transition: var(--transition-smooth); text-transform: uppercase; letter-spacing: 1px; 
+            border: 1px solid transparent;
+        }
+        .cta-btn:hover { background: transparent; color: var(--accent-teal); border-color: var(--accent-teal); box-shadow: 0 0 20px rgba(0, 229, 163, 0.2); }
+        
+        .reveal { opacity: 0; transform: translateY(30px); transition: 1s cubic-bezier(0.25, 1, 0.5, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 992px) {
+            #home { flex-direction: column; text-align: center; padding-top: 180px; }
+            .hero-grid, .about-grid { grid-template-columns: 1fr; }
+            .hero-text p { margin: 0 auto; }
+            .about-logo { margin: 0 auto; }
+            .nav-links { display: none; } /* Consider adding a hamburger menu here later */
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <nav class="navbar" id="navbar">
+        <a href="#home" class="logo-container">
+            <img src="logo.png" alt="Vertex Logo" class="nav-logo-img">
+            <div class="logo-text">VERTEX<b>SYSTEMS</b></div>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-container">
+        <section id="home">
+            <div class="hero-grid">
+                <div class="hero-text">
+                    <h1 class="reveal">Intelligence Meets<br><span style="color: var(--accent-teal);">Imagination.</span></h1>
+                    <p class="reveal">Software Engineering solutions built to scale, designed to inspire, and powered by data.</p><br><br>
+                    <a href="#services" class="cta-btn reveal">Explore Services</a>
+                </div>
+                <div class="hero-visual reveal">
+                    <img src="logo.png" alt="Vertex Systems" class="hero-logo-img">
+                </div>
+            </div>
+        </section>
+
+        <section id="about">
+            <div class="section-title-container reveal">
+                <h2>About Us</h2>
+                <div class="underline"></div>
+            </div>
+            <div class="about-grid">
+                <div class="about-image reveal">
+                    <img src="logo.png" alt="Vertex Founder" class="about-logo">
+                </div>
+                <div class="about-text reveal">
+                    <p>At Vertex Systems, we operate at the intersection of raw data and digital wonder. We believe that true innovation isn't just about writing code; it’s about collapsing the distance between a bold idea and a <strong>high-performance reality</strong>.<br><br>
+                    Founded on the principles of engineering excellence and creative intuition, our company bridges the gap between the analytical rigor of Business Intelligence and the immersive artistry of Game Development. Whether we are architecting scalable web ecosystems or engineering predictive data models, our mission remains the same: to build sophisticated digital environments that are <strong>human-centric by design</strong> and powered by precision engineering.<br><br>
+                    We don't just prepare you for the future; we build the systems that define it.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="services">
+            <div class="section-title-container reveal">
+                <h2>Our Services</h2>
+                <div class="underline"></div>
+            </div>
+            <div class="services-grid">
+                <div class="service-card reveal"><i class="fas fa-gamepad"></i><h3>Gaming</h3><p>2D/3D Dev, AR/VR, and expert monetization strategies.</p></div>
+                <div class="service-card reveal"><i class="fas fa-palette"></i><h3>Art & Design</h3><p>3D Animation, cinematic trailers, and brand identity.</p></div>
+                <div class="service-card reveal"><i class="fas fa-code"></i><h3>Web Dev</h3><p>Scalable, high-performance full-stack architectures.</p></div>
+                <div class="service-card reveal"><i class="fas fa-mobile-alt"></i><h3>Mobile Dev</h3><p>Native & cross-platform application ecosystems.</p></div>
+                <div class="service-card reveal"><i class="fas fa-chart-line"></i><h3>BI</h3><p>Transforming complex, raw data into actionable insights.</p></div>
+                <div class="service-card reveal"><i class="fas fa-brain"></i><h3>Data Science</h3><p>Predictive modeling and custom algorithmic solutions.</p></div>
+                <div class="service-card reveal"><i class="fas fa-cloud"></i><h3>Cloud Arch</h3><p>AWS/GCP deployment, elastic scaling, and security.</p></div>
+                <div class="service-card reveal"><i class="fas fa-server"></i><h3>DevOps</h3><p>CI/CD pipelines, containerization, and infrastructure.</p></div>
+            </div>
+        </section>
+
+        <section id="contact">
+            <div class="section-title-container reveal">
+                <h2>Contact</h2>
+                <div class="underline"></div>
+            </div>
+            <div class="reveal contact-methods">
+                <a href="mailto:vertexsystems26@gmail.com" class="cta-btn">vertexsystems26@gmail.com</a>
+                <a href="tel:+21699776504" class="phone-link"><i class="fas fa-phone-alt"></i> +216 99 776 504</a>
+                
+                <div class="social-links">
+                    <a href="https://linkedin.com" class="social-btn" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://github.com" class="social-btn" target="_blank"><i class="fab fa-github"></i></a>
+                    <a href="https://www.youtube.com/channel/UCzEh03lSuOApAIEoo1e6Ayg" class="social-btn" target="_blank"><i class="fab fa-youtube"></i></a>
+                    <a href="https://instagram.com" class="social-btn" target="_blank"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer style="background: #02070a; border-top: 1px solid var(--glass-border); position: relative;">
+        <div style="padding: 80px 10% 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px;">
+            
+            <div class="reveal">
+                <div class="logo-text" style="margin-bottom: 20px;">VERTEX<b>SYSTEMS</b></div>
+                <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 300px; font-weight: 300;">
+                    Engineering high-performance digital ecosystems where data meets design. 
+                </p>
+            </div>
+
+            <div class="reveal" style="display: flex; flex-direction: column; gap: 12px;">
+                <h4 style="color: var(--text-white); text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; margin-bottom: 10px;">Navigation</h4>
+                <a href="#home" style="color: var(--text-muted); text-decoration: none; transition: 0.3s;" onmouseover="this.style.color='var(--accent-teal)'" onmouseout="this.style.color='var(--text-muted)'">Home</a>
+                <a href="#about" style="color: var(--text-muted); text-decoration: none; transition: 0.3s;" onmouseover="this.style.color='var(--accent-teal)'" onmouseout="this.style.color='var(--text-muted)'">About</a>
+                <a href="#services" style="color: var(--text-muted); text-decoration: none; transition: 0.3s;" onmouseover="this.style.color='var(--accent-teal)'" onmouseout="this.style.color='var(--text-muted)'">Services</a>
+                <a href="#contact" style="color: var(--text-muted); text-decoration: none; transition: 0.3s;" onmouseover="this.style.color='var(--accent-teal)'" onmouseout="this.style.color='var(--text-muted)'">Contact</a>
+            </div>
+
+            <div class="reveal" style="display: flex; flex-direction: column; gap: 12px;">
+                <h4 style="color: var(--text-white); text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; margin-bottom: 10px;">Get In Touch</h4>
+                <p style="color: var(--text-muted); font-size: 0.9rem;"><i class="fas fa-envelope" style="margin-right: 10px; color: var(--accent-teal);"></i> vertexsystems26@gmail.com</p>
+                <p style="color: var(--text-muted); font-size: 0.9rem;"><i class="fas fa-phone" style="margin-right: 10px; color: var(--accent-teal);"></i> +216 99 776 504</p>
+                <p style="color: var(--text-muted); font-size: 0.9rem;"><i class="fas fa-map-marker-alt" style="margin-right: 10px; color: var(--accent-teal);"></i> Tunisia, North Africa</p>
+            </div>
+
+            <div class="reveal" style="display: flex; align-items: center; justify-content: flex-end;">
+                <a href="#home" class="social-btn" title="Back to Top">
+                    <i class="fas fa-arrow-up"></i>
+                </a>
+            </div>
+        </div>
+
+        <div style="padding: 30px 10%; border-top: 1px solid rgba(255,255,255,0.02); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+            <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 300;">
+                &copy; 2026 Vertex Systems. All rights reserved.
+            </p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); letter-spacing: 1px; font-weight: 300;">
+                Engineered by <b style="color: var(--text-white); font-weight: 600;">Vertex Systems</b>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Particle Background Logic (Optimized for Senior Design feel) ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function initCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 1.5 + 0.5; // Slightly smaller, more elegant particles
+                this.speedX = Math.random() * 0.4 - 0.2;
+                this.speedY = Math.random() * 0.4 - 0.2;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+            draw() {
+                ctx.fillStyle = 'rgba(0, 229, 163, 0.4)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function handleParticles() {
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                for (let j = i; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    // Shorter connection lines for a cleaner look
+                    if (distance < 120) {
+                        ctx.strokeStyle = `rgba(0, 229, 163, ${0.08 - distance/1500})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animateBg() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            handleParticles();
+            requestAnimationFrame(animateBg);
+        }
+
+        window.addEventListener('resize', initCanvas);
+        initCanvas();
+        for (let i = 0; i < 70; i++) particles.push(new Particle()); // Slightly fewer particles so it's not too cluttered
+        animateBg();
+
+        // --- Reveal Logic ---
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('navbar').classList.add('visible');
+            // Trigger initial reveals on load
+            setTimeout(() => {
+                document.querySelectorAll('#home .reveal').forEach(el => el.classList.add('active'));
+            }, 100);
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.15 }); // Wait until a bit more of the element is visible
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+        });
+    </script>
+</body>
+</html>
