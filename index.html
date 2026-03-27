@@ -32,6 +32,9 @@ body {
   overflow-x: hidden;
 }
 
+/* prevents scrolling when modal is open */
+body.modal-open { overflow: hidden; }
+
 /* subtle grain texture */
 body::before {
   content: "";
@@ -326,80 +329,6 @@ section { min-height: auto; padding: 120px 6% 100px; position: relative; z-index
 .card-link i { font-size: 0.7rem; margin: 0; padding: 0; background: none; }
 .card-link:hover { gap: 12px; border-bottom-color: var(--text-primary); }
 
-/* Featured projects */
-.featured-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
-  margin-top: 40px;
-}
-.featured-card {
-  background: rgba(255,255,255,0.88);
-  backdrop-filter: blur(10px);
-  border-radius: 32px;
-  overflow: hidden;
-  transition: var(--transition-smooth);
-  box-shadow: var(--shadow-soft);
-  border: 1px solid rgba(255,255,255,0.7);
-}
-.featured-card:hover {
-  transform: translateY(-10px);
-  background: white;
-  box-shadow: 0 30px 45px -20px rgba(29,43,44,0.2);
-}
-.card-media {
-  height: 200px;
-  background: linear-gradient(145deg, #eef1ec, #e2e6df);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 3rem;
-  color: var(--text-primary);
-  border-bottom: 1px solid rgba(0,0,0,0.03);
-}
-.featured-card h4 {
-  font-size: 1.5rem;
-  font-weight: 800;
-  padding: 20px 24px 8px;
-  letter-spacing: -0.5px;
-}
-.featured-card .price-tag {
-  padding: 0 24px;
-  font-weight: 700;
-  font-size: 1rem;
-  color: var(--text-primary);
-  letter-spacing: 0.5px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.featured-card .price-tag span {
-  background: rgba(29,43,44,0.08);
-  padding: 4px 12px;
-  border-radius: 30px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-.featured-card p {
-  padding: 12px 24px;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  line-height: 1.5;
-}
-.featured-card .card-action {
-  margin: 12px 24px 28px;
-  display: inline-block;
-  font-weight: 700;
-  text-decoration: none;
-  color: var(--text-primary);
-  border-bottom: 1.5px solid var(--text-primary);
-  padding-bottom: 2px;
-  font-size: 0.8rem;
-  letter-spacing: 0.8px;
-  transition: 0.2s;
-}
-.featured-card .card-action:hover { opacity: 0.7; gap: 4px; letter-spacing: 1px;}
-
 /* contact */
 .contact-methods {
   background: rgba(255,255,255,0.7);
@@ -495,53 +424,167 @@ section { min-height: auto; padding: 120px 6% 100px; position: relative; z-index
   color: var(--text-muted);
 }
 
-/* reveal */
-.reveal { opacity: 0; transform: translateY(40px); transition: 1s cubic-bezier(0.2, 0.9, 0.3, 1.2); }
-.reveal.active { opacity: 1; transform: translateY(0); }
+/* MODAL SYSTEMS STYLING */
+.modal {
+  display: none; /* hidden by default */
+  position: fixed;
+  z-index: 2000; /* higher than navbar */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto; /* enable scroll if content is too big */
+  background: rgba(29, 43, 44, 0.4); /* backdrop */
+  backdrop-filter: blur(8px); /* glass effect */
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
 
-/* responsive */
-@media (max-width: 1200px) {
-  .services-grid { grid-template-columns: repeat(2, 1fr); }
-  .featured-grid { grid-template-columns: repeat(2, 1fr); }
-  .hero-grid {
+/* when modal is active */
+.modal.active {
+  display: block;
+  opacity: 1;
+}
+
+.modal-content {
+  background: var(--card-bg);
+  margin: 8vh auto; /* centered vertically/horizontally */
+  padding: 60px 50px;
+  width: 80%;
+  max-width: 900px; /* limits width */
+  border-radius: 40px;
+  position: relative;
+  box-shadow: 0 40px 80px -20px rgba(0,0,0,0.15);
+  border: 1px solid rgba(255,255,255,0.7);
+  transform: translateY(50px); /* start slightly lower */
+  transition: transform 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+/* content animation when modal opens */
+.modal.active .modal-content {
+  transform: translateY(0);
+}
+
+/* closing cross button */
+.close-btn {
+  position: absolute;
+  top: 30px;
+  right: 40px;
+  color: var(--text-muted);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 10px;
+}
+.close-btn:hover { color: var(--text-primary); }
+
+/* internal layout for modal */
+.modal-grid {
   display: grid;
-  grid-template-columns: 0.9fr 1.1fr; /* Gives the logo side slightly more space */
-  gap: 70px;
+  grid-template-columns: 1fr;
+  gap: 40px;
+}
+
+/* side-by-side images container */
+.modal-images-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.modal-img-wrapper {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+  height: 250px; /* fixed height for images */
+}
+.modal-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* crop to fill */
+  transition: transform 0.3s;
+}
+.modal-img-wrapper:hover .modal-img { transform: scale(1.05); }
+
+/* titles and text structures inside modal */
+.modal-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 30px;
+  letter-spacing: -0.5px;
+}
+.modal-text-block { margin-bottom: 25px; }
+.modal-point-title {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  display: flex;
   align-items: center;
+  gap: 12px;
 }
-  .hero-circle { width: 360px; height: 360px; margin: 0 auto; }
-  /* UPDATED mobile logo scaling to fill new circle size */
-  .hero-logo-img { width: 320px; height: 320px; }
-  .about-grid { grid-template-columns: 1fr; text-align: center; padding: 48px; gap: 40px; }
+.modal-point-title i { color: var(--text-muted); font-size: 0.9rem; }
+.modal-point-desc {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.7;
 }
-@media (max-width: 860px) {
-  .nav-links { display: none; }
-  .menu-toggle { display: block; }
-  .services-grid { grid-template-columns: 1fr; }
-  .featured-grid { grid-template-columns: 1fr; }
-  .footer-grid { grid-template-columns: 1fr; gap: 40px; }
-  .contact-methods { padding: 50px 30px; }
-  .section-title { font-size: 2rem; }
+
+/* RESPONSIVE STYLING FOR MODALS */
+@media (max-width: 900px) {
+  .modal-content { width: 90%; padding: 50px 30px; }
+  .modal-images-row { grid-template-columns: 1fr; gap: 15px; }
+  .modal-img-wrapper { height: 200px; }
+  .close-btn { top: 20px; right: 20px; font-size: 1.3rem; }
 }
 @media (max-width: 550px) {
-  .hero-circle { width: 280px; height: 280px; }
-  /* UPDATED mobile logo scaling to fill new circle size */
-  .hero-logo-img { width: 250px; height: 250px; }
-  /* DELETED mobile scaling for redundant logo text */
-  /* .hero-logo-text { font-size: 1.1rem; } */
-  /* .hero-logo-tagline { font-size: 0.8rem; } */
-  .about-circle { width: 200px; height: 200px; }
-  .about-logo { width: 100px; height: 100px; }
-  .contact-details { gap: 12px; }
-  .phone-link { font-size: 1.1rem; }
+  .modal-title { font-size: 1.6rem; }
+  .modal-img-wrapper { height: 160px; }
+  .modal-content { border-radius: 25px; padding: 40px 20px; }
 }
+
+/* end of modal styles */
 </style>
 </head>
 <body>
 <div class="orb-container"><div class="gradient-orb orb-1"></div><div class="gradient-orb orb-2"></div><div class="gradient-orb orb-3"></div></div>
 <div class="menu-overlay" id="menuOverlay"></div>
 
-<nav class="navbar" id="navbar">
+<div id="gaming-modal" class="modal">
+  <div class="modal-content">
+    <span id="close-gaming-modal" class="close-btn"><i class="fas fa-times"></i></span>
+    <div class="modal-title">Gaming, XR & Simulation</div>
+    <div class="modal-grid">
+      
+      <div class="modal-images-row">
+        <div class="modal-img-wrapper"><img src="G1.png" alt="VR environment example" class="modal-img" loading="lazy"></div>
+        <div class="modal-img-wrapper"><img src="G2.png" alt="Ferris wheel VR simulation" class="modal-img" loading="lazy"></div>
+      </div>
+      
+      <div class="modal-description">
+        
+        <div class="modal-text-block">
+          <div class="modal-point-title"><i class="fas fa-cube"></i>Multi-Dimension Development</div>
+          <p class="modal-point-desc">Expertise in 2D, 3D, VR, and AR environments tailored for PC, Mobile, and Web.</p>
+        </div>
+
+        <div class="modal-text-block">
+          <div class="modal-point-title"><i class="fas fa-vr-cardboard"></i>Advanced Simulations</div>
+          <p class="modal-point-desc">Creating immersive, physics-based digital twins and training environments for complex industries.</p>
+        </div>
+
+        <div class="modal-text-block">
+          <div class="modal-point-title"><i class="fas fa-chart-line"></i>Strategic Monetization</div>
+          <p class="modal-point-desc">Implementation of sustainable revenue models, including In-App Purchases (IAP), Ads, and Premium launches.</p>
+        </div>
+
+        <div class="modal-text-block">
+          <div class="modal-point-title"><i class="fas fa-database"></i>Data-Driven Analytics</div>
+          <p class="modal-point-desc">Deep integration of BI tools to track player behavior, KPIs, and system performance in real-time.</p>
+        </div>
+        
+      </div> </div> </div> </div> <nav class="navbar" id="navbar">
   <a href="#home" class="logo-container">
     <img src="Logo.png" alt="Vertex Logo" class="nav-logo-img" onerror="this.src='https://placehold.co/48x48?text=V'">
     <div class="logo-text">VERTEX<b>SYSTEMS</b></div>
@@ -588,11 +631,11 @@ section { min-height: auto; padding: 120px 6% 100px; position: relative; z-index
   <section id="services">
     <div class="reveal"><div class="section-title">Core expertise</div></div>
     <div class="services-grid">
-      <div class="service-card reveal"><i class="fas fa-gamepad"></i><h3>Gaming & VR</h3><p>High-fidelity 2D/3D architecture, immersive realities, real-time engines.</p><a href="#contact" class="card-link">Discover <i class="fas fa-arrow-right"></i></a></div>
+      <div class="service-card reveal"><i class="fas fa-gamepad"></i><h3>Gaming</h3><p>High-fidelity 2D/3D architecture, immersive realities, real-time engines.</p><a href="#" id="open-gaming-modal" class="card-link">Discover <i class="fas fa-arrow-right"></i></a></div>
       <div class="service-card reveal"><i class="fas fa-palette"></i><h3>Art Direction</h3><p>Premium brand identity, motion design, and visual storytelling.</p><a href="#contact" class="card-link">Discover <i class="fas fa-arrow-right"></i></a></div>
       <div class="service-card reveal"><i class="fas fa-code"></i><h3>Web Engineering</h3><p>Full-stack, high-performance architectures & serverless ecosystems.</p><a href="#contact" class="card-link">Discover <i class="fas fa-arrow-right"></i></a></div>
-      <div class="service-card reveal"><i class="fas fa-mobile-alt"></i><h3>Mobile Native</h3><p>iOS & Android, cross-platform excellence, fluid UX.</p><a href="#contact" class="card-link">Discover <i class="fas fa-arrow-right"></i></a></div>
-      <div class="service-card reveal"><i class="fas fa-chart-line"></i><h3>Business Intel</h3><p>Advanced dashboards, data visualization, actionable insights.</p><a href="#contact" class="card-link">Discover <i class="fas fa-arrow-right"></i></a></div>
+      <div class="service-card reveal"><i class="fas fa-mobile-alt"></i><h3>Mobile Engineering</h3><p>iOS & Android, cross-platform excellence, fluid UX.</p><a href="#contact" class="card-link">Discover <i class="fas fa-arrow-right"></i></a></div>
+      <div class="service-card reveal"><i class="fas fa-chart-line"></i><h3>Business Intelligence</h3><p>Advanced dashboards, data visualization, actionable insights.</p><a href="#contact" class="card-link">Discover <i class="fas fa-arrow-right"></i></a></div>
       <div class="service-card reveal"><i class="fas fa-brain"></i><h3>AI & Data Science</h3><p>Predictive models, LLM integration, machine learning pipelines.</p><a href="#contact" class="card-link">Discover <i class="fas fa-arrow-right"></i></a></div>
       <div class="service-card reveal"><i class="fas fa-cloud"></i><h3>Cloud Solutions</h3><p>AWS/Azure, scalable infrastructure, zero-downtime deployments.</p><a href="#contact" class="card-link">Discover <i class="fas fa-arrow-right"></i></a></div>
       <div class="service-card reveal"><i class="fas fa-server"></i><h3>DevOps & Automation</h3><p>CI/CD pipelines, Kubernetes, GitOps, observability.</p><a href="#contact" class="card-link">Discover <i class="fas fa-arrow-right"></i></a></div>
@@ -614,7 +657,7 @@ section { min-height: auto; padding: 120px 6% 100px; position: relative; z-index
         <h4>Immersive Engine</h4>
         <div class="price-tag"><span>🎮 XR ready</span> <i class="fas fa-vr-cardboard"></i></div>
         <p>Multi-platform gaming framework, real-time ray tracing & haptics.</p>
-        <a href="#contact" class="card-action">Explore case →</a>
+        <a href="#featured" class="card-action">Explore case →</a>
       </div>
       <div class="featured-card reveal">
         <div class="card-media"><i class="fas fa-cloud-arrow-up" style="font-size: 3.5rem;"></i></div>
@@ -629,9 +672,9 @@ section { min-height: auto; padding: 120px 6% 100px; position: relative; z-index
   <section id="contact">
     <div class="contact-methods reveal">
       <h2>Let's shape the future</h2>
-      <a href="mailto:vertexsystems26@gmail.com" class="cta-btn" style="margin-bottom: 20px;">Send an email</a>
+      <a href="mailto:contact@vertexsystems.tech" class="cta-btn" style="margin-bottom: 20px;">Send an email</a>
       <div class="contact-details">
-        <a href="mailto:vertexsystems26@gmail.com" class="phone-link">vertexsystems26@gmail.com</a>
+        <a href="mailto:contact@vertexsystems.tech" class="phone-link">contact@vertexsystems.tech</a>
         <a href="tel:+21699776504" class="phone-link">+216 99 776 504</a>
       </div>
       <div class="social-links">
@@ -696,6 +739,39 @@ document.addEventListener('mousemove', (e) => {
     circle.style.transform = `translate(${x}px, ${y}px)`;
   }
 });
+
+/* MODAL SYSTEMS JAVASCRIPT */
+const gamingModal = document.getElementById('gaming-modal');
+const openGamingBtn = document.getElementById('open-gaming-modal');
+const closeGamingBtn = document.getElementById('close-gaming-modal');
+const bodyElement = document.body;
+
+// functionality to open modal
+openGamingBtn.onclick = function(e) {
+  e.preventDefault(); // prevent navigation
+  gamingModal.classList.add('active');
+  bodyElement.classList.add('modal-open'); // prevents body scroll
+}
+
+// functionality to close modal
+function closeGamingModal() {
+  gamingModal.classList.remove('active');
+  bodyElement.classList.remove('modal-open'); // restore body scroll
+}
+closeGamingBtn.onclick = closeGamingModal;
+
+// close when clicking background overlay
+gamingModal.onclick = function(event) {
+  if (event.target == gamingModal) { closeGamingModal(); }
+}
+
+// close with 'Esc' key
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape' && gamingModal.classList.contains('active')) {
+    closeGamingModal();
+  }
+});
+/* end of modal js */
 </script>
 </body>
 </html>
